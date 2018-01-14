@@ -1,20 +1,106 @@
-<!DOCTYPE html>
-  <html>
-    <head>
-      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+<!doctype html>
+<html>
 
-      
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    </head>
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
 
-    <body>
-      skdjfskdfh
-      <h1>derp</h1>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
 
-      <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-    </body>
-  </html>
-  
-          
+
+<body>
+  <nav>
+    <div class="nav-wrapper">
+      <a href="/" class="brand-logo center">Brew Buddy Live</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li>
+          <a href="#" , onclick="setDisplayName('')">Clear display name</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+
+  </div>
+
+  <!-- Modal for user name -->
+  <div id="modal_name" class="modal modal-fixed-footer">
+    <div class="modal-content">
+      <h4>Set display name</h4>
+      <p>Please set a user name which will be used in all games:</p>
+      <div class="input-field">
+        <input id="modal_name_input" type="text">
+        <label for="modal_name_input">User Name</label>
+      </div>
+      <!-- TODO: Something about saving as a cookie? -->
+    </div>
+    <div class="modal-footer">
+      <a href="#!" id="modal_name_accept" class="modal-action modal-close waves-effect waves-green btn-flat" , onclick="acceptModal()">Accept</a>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+  <script>
+    let getCookie = (cname) => {
+      var name = cname + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    };
+
+    let setCookie = (cname, cvalue) => {
+      document.cookie = cname + "=" + cvalue;
+    };
+
+    let acceptModal = () => {
+      let chosenName = $("#modal_name_input").val();
+      setDisplayName(chosenName);
+    };
+
+    let setDisplayName = (displayName) => {
+      setCookie("name", displayName);
+    };
+
+    $(document).ready(() => {
+      // Set up display name modal behaviour
+      $('.modal').modal({ dismissible: false });
+
+      // Check if display name has already been set
+      let cookieName = getCookie("name");
+      if (cookieName === "") {
+        $("#modal_name").modal("open");
+      }
+    });
+  </script>
+
+  <!-- 
+  <script>
+    $(function () {
+      var socket = io();
+      $('form').submit(function () {
+        socket.emit('chat message', $('#m').val());
+        $('#m').val('');
+        return false;
+      });
+      socket.on('chat message', function (msg) {
+        $('#messages').append($('<li>').text(msg));
+      });
+    });
+  </script> -->
+</body>
+
+</html>
