@@ -1,7 +1,12 @@
 const TOKEN_AVAILABLE_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 const TOKEN_LENGTH = 6;
 
-let activeTokens = [];
+let activeSessions = [];
+
+let getSessionByToken = (sessionToken) => {
+    let foundSession = activeSessions.find((e) => e.token === sessionToken);
+    return foundSession === undefined ? null : foundSession;
+}
 
 let generateSessionToken = () => {
     let newToken;
@@ -14,12 +19,40 @@ let generateSessionToken = () => {
             let nextChar = TOKEN_AVAILABLE_CHARS[nextCharIndex]
             newToken += nextChar
         }
-    } while (activeTokens.find((e) => e === newToken) !== undefined);
+    } while (getSessionByToken(newToken) !== null);
 
-    activeTokens.push(newToken)
     return newToken
 }
 
+let generateSession = (hostId, hostName) => {
+    let token = generateSessionToken();
+
+    activeSessions.push({ 
+        token: token,
+        host: {
+            id: hostId,
+            name: hostName
+        },
+        clients: []
+    });
+
+    return token;
+}
+
+let joinSession = (sessionToken, clientId, clientName) => {
+    let session = getSessionByToken(sessionToken);
+
+    if (session === null) {
+        throw `Could not location active session ${sessionToken}`;
+    }
+
+    session.clients.push({
+        id: clientId,
+        name: clientName
+    });
+}
+
 module.exports = {
-    generateSessionToken: generateSessionToken
+    generateSession: generateSession,
+    joinSession: joinSession
 }

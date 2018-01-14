@@ -88,11 +88,19 @@
         let sessionToken = window.location.pathname.slice(1)
 
         if (sessionToken === "") {
-          socket.emit("session new", { clientId: socket.id });
+          socket.emit("session.new", { name: getCookie("name") });
         } else {
-          socket.emit("session join", { clientId: socket.id, sessionToken: sessionToken });
+          socket.emit("session.join", { name: getCookie("name"), sessionToken: sessionToken });
         }
       });
+
+      socket.on("session.new.response", (data) => {
+        console.log("created session " + data.sessionToken);
+      })
+
+      socket.on("session.join.response", (data) => {
+        console.log(`joined session, host:${data.hostName}`);
+      })
     }
 
     $(document).ready(() => {

@@ -14,25 +14,37 @@ app.get('/*', function(req, res){
 // });
 
 io.on('connection', function(socket){
-  console.log('a user connected');
+  console.log('connection');
 
-  socket.on("session new", (data) => {
-    console.log(data.clientId);
-    console.log(session.generateSessionToken());
+  socket.on("session.new", (data) => { 
+    console.log("session.new");
+    console.log(`- socket id:${socket.id}`);
+
+    // Create new session, get token
+    let sessionToken = session.generateSession(socket.id, data.name);
+    console.log(`- generated token:${sessionToken}`);
+
+    // Join session room
+    socket.join(sessionToken);
+
+    // Send session token to host
+    io.to(socket.id).emit("session.new.response", {sessionToken: sessionToken});
+  });
+
+  socket.on("session.join", (data) => {
+    console.log("session.join");
+    console.log(`- socket id:${socket.id}, session token:${data.sessionToken}`);
+
+    session.joinSession(data.sessionToken, socket.id, data.name);
   })
 
-  socket.on("session join", (data) => {
-    console.log(data.clientId);
+  socket.on("session.join", (data) => {
+    console.log(socket.id);
     console.log(data.sessionToken);
   })
 
-  socket.on('chat message', function(msg){
-    console.log('message: ' + msg);
-    io.emit('chat message', msg);
-    
-  });
   socket.on('disconnect', function(){
-    console.log('user disconnected');
+    console.log('disconnect');
   });
 });
 
