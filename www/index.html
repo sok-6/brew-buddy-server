@@ -10,18 +10,18 @@
 
 
 <body>
-  <nav>
-    <div class="nav-wrapper">
-      <a href="/" class="brand-logo center">Brew Buddy Live</a>
-      <ul id="nav-mobile" class="right hide-on-med-and-down">
-        <li>
-          <a href="#" , onclick="setDisplayName('')">Clear display name</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
-
   <div class="container">
+    <nav>
+      <div class="nav-wrapper">
+        <a href="/" class="brand-logo center">Brew Buddy Live</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li>
+            <a onclick="setDisplayName('')">Clear display name</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
 
   </div>
 
@@ -37,7 +37,7 @@
       <!-- TODO: Something about saving as a cookie? -->
     </div>
     <div class="modal-footer">
-      <a href="#!" id="modal_name_accept" class="modal-action modal-close waves-effect waves-green btn-flat" , onclick="acceptModal()">Accept</a>
+      <a id="modal_name_accept" class="modal-action modal-close waves-effect waves-green btn-flat" , onclick="acceptModal()">Accept</a>
     </div>
   </div>
 
@@ -46,6 +46,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 
   <script>
+    var socket;
+
     let getCookie = (cname) => {
       var name = cname + "=";
       var decodedCookie = decodeURIComponent(document.cookie);
@@ -66,23 +68,48 @@
       document.cookie = cname + "=" + cvalue;
     };
 
+    let setDisplayName = (displayName) => {
+      setCookie("name", displayName);
+    };
+
     let acceptModal = () => {
       let chosenName = $("#modal_name_input").val();
       setDisplayName(chosenName);
     };
 
-    let setDisplayName = (displayName) => {
-      setCookie("name", displayName);
-    };
+    let openConnection = () => {
+      socket = new io();
+
+      // Set up event listeners
+      socket.on("connect", () => {
+        console.log(socket.id);
+
+        // Create new session or join existing one
+        let sessionToken = window.location.pathname.slice(1)
+
+        if (sessionToken === "") {
+          socket.emit("session new", { clientId: socket.id });
+        } else {
+          socket.emit("session join", { clientId: socket.id, sessionToken: sessionToken });
+        }
+      });
+    }
 
     $(document).ready(() => {
       // Set up display name modal behaviour
-      $('.modal').modal({ dismissible: false });
+      $('#modal_name').modal({
+        dismissible: false,
+        complete: () => {
+          openConnection();
+        }
+      });
 
       // Check if display name has already been set
       let cookieName = getCookie("name");
       if (cookieName === "") {
         $("#modal_name").modal("open");
+      } else {
+        openConnection();
       }
     });
   </script>
