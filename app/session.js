@@ -50,9 +50,56 @@ let joinSession = (sessionToken, clientId, clientName) => {
         id: clientId,
         name: clientName
     });
+
+    return session
+}
+
+let getSessionBySocketId = (socketId) => {
+    for (let i = 0; i < activeSessions.length; i++) {
+        const session = activeSessions[i];
+        if (session.host.id === socketId) {
+            return session;
+        }
+        else {
+            for (let x = 0; x < session.clients.length; x++) {
+                const client = session.clients[x];
+                if (client.id === socketId) {
+                    return session;
+                }
+            }
+        }
+    }
+
+    return null;
+}
+
+let getSessionTokenBySocketId = (socketId) => {
+    return getSessionBySocketId(socketId).token;
+}
+
+let handleDisconnection = (socketId, closeRoom) => {
+    for (let i = 0; i < activeSessions.length; i++) {
+        const session = activeSessions[i];
+        if (session.host.id === socketId) {
+            // Host disconnected, send remote close to room
+            closeRoom(session.token);
+            return;
+        }
+        else {
+            for (let x = 0; x < session.clients.length; x++) {
+                const client = session.clients[x];
+                if (client.id === socketId) {
+                    session.clients.splice(x, 1);
+                    return;
+                }
+            }
+        }
+    }
 }
 
 module.exports = {
     generateSession: generateSession,
-    joinSession: joinSession
+    joinSession: joinSession,
+    handleDisconnection: handleDisconnection,
+    getSessionTokenBySocketId: getSessionTokenBySocketId
 }

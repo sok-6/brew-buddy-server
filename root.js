@@ -8,11 +8,6 @@ app.get('/*', function (req, res) {
   res.sendFile(__dirname + '/www/index.html');
 });
 
-// app.get('/:sessionToken', (req, res) => {
-//   console.log(req.params.sessionToken);
-//   res.sendFile(__dirname + '/www/index.html');
-// });
-
 io.on('connection', function (socket) {
   console.log('connection');
 
@@ -36,19 +31,27 @@ io.on('connection', function (socket) {
     console.log(`- socket id:${socket.id}, session token:${data.sessionToken}`);
 
     try {
-      session.joinSession(data.sessionToken, socket.id, data.name);
-    } catch(e) {
+      var hostName = session.joinSession(data.sessionToken, socket.id, data.name);
+      socket.join(data.sessionToken);
+      io.to(socket.id).emit("session.join.response", { hostName: hostName });
+    } catch (e) {
       console.log(e);
     }
   })
 
-  socket.on("session.join", (data) => {
-    console.log(socket.id);
-    console.log(data.sessionToken);
+  socket.on("connection.check", (data) => {
+    console.log(`connection.check - initiated by ${socket.id}`);
+    socket.to(session.getSessionTokenBySocketId(socket.id)).emit("connection.check", { initiatedById: socket.id });
   })
 
   socket.on('disconnect', function () {
     console.log('disconnect');
+    console.log(`- socket id:${socket.id}`);
+
+    // Remove socket from session, close room if socket was host
+    session.handleDisconnection(socket.id, (sessionToken) => {
+      socket.to(sessionToken).emit("session.close");
+    })
   });
 });
 
