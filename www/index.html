@@ -6,10 +6,22 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
 
   <style>
-    html,body{
+    html,
+    body {
       height: 100%;
+      margin: 0px;
     }
-    /*https://stackoverflow.com/questions/10825879/how-can-a-variable-height-sticky-footer-be-defined-in-pure-css/26558049#26558049*/
+
+    #flex-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - 70px);
+    }
+
+    .full-height {
+      height:100%;
+      margin-bottom: 0;
+    }
   </style>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,19 +29,29 @@
 
 
 <body>
-    <nav>
-      <div class="nav-wrapper">
-        <a href="/" class="brand-logo center">Brew Buddy Live</a>
-        <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li>
-            <a onclick="setDisplayName('')">Clear display name</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
+  <nav>
+    <div class="nav-wrapper">
+      <a href="/" class="brand-logo center">Brew Buddy Live</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li>
+          <a onclick="setDisplayName('')">Clear display name</a>
+        </li>
+        <li>
+          <a onclick="initiateConnectionCheck()">Check Connection</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
 
-  <div class="container">
-    <a class="waves-effect waves-light btn" onclick="initiateConnectionCheck()">Check Connection</a>
+  <div id="flex-container" class="container">
+    <div class="full-height row">
+      <div class="full-height col m9 s12" style="background-color: darkgray;">
+        derp
+      </div>
+      <div class="full-height col m3 s12">
+        derpderp
+      </div>
+    </div>
   </div>
 
   <!-- Modal for user name -->
@@ -54,7 +76,7 @@
 
   <script>
     var socket;
-    var cookieName = "";
+    var cookieName = "123";
 
     let getCookie = (cname) => {
       // var name = cname + "=";
