@@ -4,7 +4,7 @@ var io = require('socket.io')(http);
 
 const session = require("./app/session");
 
-app.get('/*', function(req, res){
+app.get('/*', function (req, res) {
   res.sendFile(__dirname + '/www/index.html');
 });
 
@@ -13,10 +13,10 @@ app.get('/*', function(req, res){
 //   res.sendFile(__dirname + '/www/index.html');
 // });
 
-io.on('connection', function(socket){
+io.on('connection', function (socket) {
   console.log('connection');
 
-  socket.on("session.new", (data) => { 
+  socket.on("session.new", (data) => {
     console.log("session.new");
     console.log(`- socket id:${socket.id}`);
 
@@ -28,14 +28,18 @@ io.on('connection', function(socket){
     socket.join(sessionToken);
 
     // Send session token to host
-    io.to(socket.id).emit("session.new.response", {sessionToken: sessionToken});
+    io.to(socket.id).emit("session.new.response", { sessionToken: sessionToken });
   });
 
   socket.on("session.join", (data) => {
     console.log("session.join");
     console.log(`- socket id:${socket.id}, session token:${data.sessionToken}`);
 
-    session.joinSession(data.sessionToken, socket.id, data.name);
+    try {
+      session.joinSession(data.sessionToken, socket.id, data.name);
+    } catch(e) {
+      console.log(e);
+    }
   })
 
   socket.on("session.join", (data) => {
@@ -43,11 +47,11 @@ io.on('connection', function(socket){
     console.log(data.sessionToken);
   })
 
-  socket.on('disconnect', function(){
+  socket.on('disconnect', function () {
     console.log('disconnect');
   });
 });
 
-http.listen(3000, function(){
+http.listen(3000, function () {
   console.log('listening on *:3000');
 });
