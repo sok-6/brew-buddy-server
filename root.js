@@ -24,6 +24,8 @@ io.on('connection', function (socket) {
 
     // Send session token to host
     io.to(socket.id).emit("session.new.response", { sessionToken: sessionToken });
+
+    io.to(sessionToken).emit("feed.add.status", { message: `Session created with token ${sessionToken}` });
   });
 
   socket.on("session.join", (data) => {
@@ -34,6 +36,7 @@ io.on('connection', function (socket) {
       var hostName = session.joinSession(data.sessionToken, socket.id, data.name);
       socket.join(data.sessionToken);
       io.to(socket.id).emit("session.join.response", { hostName: hostName });
+      io.to(data.sessionToken).emit("feed.add.status", {message:`${data.name} joined the session`});
     } catch (e) {
       console.log(e);
     }

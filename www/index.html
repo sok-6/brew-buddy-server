@@ -15,7 +15,6 @@
     .flex-container {
       display: flex;
       flex-flow: column;
-      /* height: calc(100% - 70px); */
     }
 
     .flex-nav {
@@ -34,6 +33,17 @@
 
     .full-height {
       height: 100%;
+    }
+
+    .feed-body {
+      height: 100%;
+      border-width: 0px;
+      border-left: 1px black;
+      border-style: solid;
+    }
+
+    .feed-component {
+      padding: 3px;
     }
   </style>
 
@@ -60,11 +70,24 @@
     <div class="flex-body">
       <!-- <div class="full-height container"> -->
       <div class="row flex-row">
-        <div class="full-height col m9 s12" style="background-color: darkgray;">
+        <div class="full-height col m9 s12">
           123
         </div>
         <div class="full-height col m3 s12">
-          456
+          <div id="feed-body" class="feed-body">
+            <div class="feed-component">
+              456
+            </div>
+          </div>
+          <!-- <div style="position:absolute;bottom:0;display:flex;background-color:deepskyblue;">
+            <div class="input-field inline" style=>
+              <input id="input-message" type="text">
+            </div>
+            <span class="valign-wrapper">
+                <a class="waves-effect waves-light btn inline" style="padding:0 1rem;"><i class="material-icons">send</a>
+            </span>
+            
+          </div> -->
         </div>
       </div>
       <!-- </div> -->
@@ -160,6 +183,15 @@
       socket.on("connection.check", (data) => {
         console.log(`Connection check initiated by ${data.initiatedById}`);
       })
+
+      socket.on("feed.add.status", (data) => {
+        console.log("feed.add.status");
+
+        let newElement = $("<div>").addClass("feed-element").append($("<i>").text(data.message));
+
+        $("#feed-body").append(newElement);
+
+      })
     }
 
     let initiateConnectionCheck = () => {
@@ -184,21 +216,6 @@
       }
     });
   </script>
-
-  <!-- 
-  <script>
-    $(function () {
-      var socket = io();
-      $('form').submit(function () {
-        socket.emit('chat message', $('#m').val());
-        $('#m').val('');
-        return false;
-      });
-      socket.on('chat message', function (msg) {
-        $('#messages').append($('<li>').text(msg));
-      });
-    });
-  </script> -->
 </body>
 
 </html>
