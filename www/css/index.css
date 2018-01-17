@@ -1,0 +1,38 @@
+html, body {
+    height: 100%;
+    margin: 0px;
+}
+
+.flex-container {
+    display: flex;
+    flex-flow: column;
+}
+
+.flex-nav {
+    flex: 0 1 auto;
+}
+
+.flex-body {
+    flex: 1 1 auto;
+    display: flex;
+}
+
+.flex-row {
+    flex: 1 1 auto;
+    margin-bottom: 0;
+}
+
+.full-height {
+    height: 100%;
+}
+
+.feed-body {
+    height: 100%;
+    border-width: 0px;
+    border-left: 1px black;
+    border-style: solid;
+}
+
+.feed-component {
+    padding: 3px;
+}

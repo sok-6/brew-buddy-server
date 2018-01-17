@@ -1,12 +1,21 @@
-var app = require('express')();
+const express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+const path = require("path")
+
 const session = require("./app/session");
 
-app.get('/*', function (req, res) {
-  res.sendFile(__dirname + '/www/index.html');
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/www/index.html");
 });
+
+app.get("/:sessionToken"), (req, res) => {
+  res.sendFile(__dirname + "/www/index.html");
+}
+
+app.use(express.static("www"));
 
 io.on('connection', function (socket) {
   console.log('connection');
@@ -36,7 +45,7 @@ io.on('connection', function (socket) {
       var hostName = session.joinSession(data.sessionToken, socket.id, data.name);
       socket.join(data.sessionToken);
       io.to(socket.id).emit("session.join.response", { hostName: hostName });
-      io.to(data.sessionToken).emit("feed.add.status", {message:`${data.name} joined the session`});
+      io.to(data.sessionToken).emit("feed.add.status", { message: `${data.name} joined the session` });
     } catch (e) {
       console.log(e);
     }
@@ -53,7 +62,7 @@ io.on('connection', function (socket) {
 
     let sessionToken = session.getSessionTokenBySocketId(socket.id);
     session.
-    io.to(sessionToken).emit("feed.add.status", {message})
+      io.to(sessionToken).emit("feed.add.status", { message })
 
     // Remove socket from session, close room if socket was host
     session.handleDisconnection(socket.id, (sessionToken) => {

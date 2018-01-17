@@ -4,48 +4,7 @@
 <head>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-
-  <style>
-    html,
-    body {
-      height: 100%;
-      margin: 0px;
-    }
-
-    .flex-container {
-      display: flex;
-      flex-flow: column;
-    }
-
-    .flex-nav {
-      flex: 0 1 auto;
-    }
-
-    .flex-body {
-      flex: 1 1 auto;
-      display: flex;
-    }
-
-    .flex-row {
-      flex: 1 1 auto;
-      margin-bottom: 0;
-    }
-
-    .full-height {
-      height: 100%;
-    }
-
-    .feed-body {
-      height: 100%;
-      border-width: 0px;
-      border-left: 1px black;
-      border-style: solid;
-    }
-
-    .feed-component {
-      padding: 3px;
-    }
-  </style>
+  <link rel="stylesheet" href="css/index.css">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
@@ -114,108 +73,7 @@
   <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 
-  <script>
-    var socket;
-    var cookieName = "123";
-
-    let getCookie = (cname) => {
-      // var name = cname + "=";
-      // var decodedCookie = decodeURIComponent(document.cookie);
-      // var ca = decodedCookie.split(';');
-      // for (var i = 0; i < ca.length; i++) {
-      //   var c = ca[i];
-      //   while (c.charAt(0) == ' ') {
-      //     c = c.substring(1);
-      //   }
-      //   if (c.indexOf(name) == 0) {
-      //     return c.substring(name.length, c.length);
-      //   }
-      // }
-      // return "";
-      return cookieName;
-    };
-
-    let setCookie = (cname, cvalue) => {
-      // document.cookie = cname + "=" + cvalue;
-      cookieName = cvalue;
-    };
-
-    let setDisplayName = (displayName) => {
-      setCookie("name", displayName);
-    };
-
-    let acceptModal = () => {
-      let chosenName = $("#modal_name_input").val();
-      setDisplayName(chosenName);
-    };
-
-    let openConnection = () => {
-      socket = new io();
-
-      // Set up event listeners
-      socket.on("connect", () => {
-        console.log(socket.id);
-
-        // Create new session or join existing one
-        let sessionToken = window.location.pathname.slice(1)
-
-        if (sessionToken === "") {
-          socket.emit("session.new", { name: getCookie("name") });
-        } else {
-          socket.emit("session.join", { name: getCookie("name"), sessionToken: sessionToken });
-        }
-      });
-
-      socket.on("session.new.response", (data) => {
-        console.log("created session " + data.sessionToken);
-      })
-
-      socket.on("session.join.response", (data) => {
-        console.log(`joined session, host:${data.hostName}`);
-      })
-
-      socket.on("session.close", () => {
-        console.log("session.close");
-        socket.close();
-        socket = null;
-      })
-
-      socket.on("connection.check", (data) => {
-        console.log(`Connection check initiated by ${data.initiatedById}`);
-      })
-
-      socket.on("feed.add.status", (data) => {
-        console.log("feed.add.status");
-
-        let newElement = $("<div>").addClass("feed-element").append($("<i>").text(data.message));
-
-        $("#feed-body").append(newElement);
-
-      })
-    }
-
-    let initiateConnectionCheck = () => {
-      socket.emit("connection.check");
-    }
-
-    $(document).ready(() => {
-      // Set up display name modal behaviour
-      $('#modal_name').modal({
-        dismissible: false,
-        complete: () => {
-          openConnection();
-        }
-      });
-
-      // Check if display name has already been set
-      let cookieName = getCookie("name");
-      if (cookieName === "") {
-        $("#modal_name").modal("open");
-      } else {
-        openConnection();
-      }
-    });
-  </script>
+  <script src="js/index.js"></script>
 </body>
 
 </html>
