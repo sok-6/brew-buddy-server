@@ -51,6 +51,10 @@ io.on('connection', function (socket) {
     console.log('disconnect');
     console.log(`- socket id:${socket.id}`);
 
+    let sessionToken = session.getSessionTokenBySocketId(socket.id);
+    session.
+    io.to(sessionToken).emit("feed.add.status", {message})
+
     // Remove socket from session, close room if socket was host
     session.handleDisconnection(socket.id, (sessionToken) => {
       socket.to(sessionToken).emit("session.close");
