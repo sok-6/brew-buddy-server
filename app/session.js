@@ -32,7 +32,7 @@ class Session {
             throw `Client with id ${clientId} is already present in session`;
         }
         else {
-            let newClient = new Client(clientid, clientName, false);
+            let newClient = new Client(clientId, clientName, false);
             this.clients.push(newClient);
 
             if (callback !== null) {
@@ -51,6 +51,11 @@ class Session {
     }
 }
 
+/**
+ * Finds a session to which a given client belongs
+ * @param  {} clientId The client id to find a session for
+ * @returns {} The found session, or undefined if no such session found
+ */
 let findSessionByClientId = (clientId) => {
     return activeSessions.find((s) => s.clients.find((c) => c.id === clientId) !== undefined);
 }
@@ -58,7 +63,12 @@ let findSessionByClientId = (clientId) => {
 let findSessionByToken = (token) => {
     return activeSessions.find((s) => s.token === token);
 }
-
+/**
+ * Generates a new session with a unique token, hosted by the specified client
+ * @param  {} hostId The id of the host client
+ * @param  {} hostName The name of the host client
+ * @returns {} The newly created session
+ */
 let generateSession = (hostId, hostName) => {
     // Check if host is already client in another session
     let existingSession = findSessionByClientId(hostId);
@@ -107,8 +117,8 @@ let joinSession = (token, clientId, clientName) => {
 /**
  * Handles the disconnection of a given client. If the client is a host, the session will be removed from the active sessions list
  * @param  {} clientId The id of the client who has disconnected
- * @param  {} hostCallback The callback to invoke if the client was the host of a session
- * @param  {} clientCallback The callbackto invoke if the client was not the host of a session
+ * @param  {} hostCallback The callback to invoke if the client was the host of a session; signature is callback(session)
+ * @param  {} clientCallback The callbackto invoke if the client was not the host of a session; signature is callback(session)
  */
 let handleDisconnection = (clientId, hostCallback, clientCallback) => {
     // Get the session the client belongs to

@@ -5,17 +5,19 @@ var io = require('socket.io')(http);
 
 const path = require("path")
 
-const session = require("./app/session");
+const sessionManager = require("./app/session");
 
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/www/index.html");
+// TODO: Remove manual routing, need to figure out express.js
+app.get("/*", (req, res) => {
+  if (req.path.startsWith("/static/")) {
+    let x = req.path.substring(7);
+    res.sendFile(path.join(__dirname, "www", x));
+  } else {
+    res.sendFile(path.join(__dirname, "www/index.html"));
+  }
 });
 
-app.get("/:sessionToken"), (req, res) => {
-  res.sendFile(__dirname + "/www/index.html");
-}
-
-app.use(express.static("www"));
+app.use("/static", express.static("www"));
 
 io.on('connection', function (socket) {
   console.log('connection');
@@ -25,16 +27,16 @@ io.on('connection', function (socket) {
     console.log(`- socket id:${socket.id}`);
 
     // Create new session, get token
-    let sessionToken = session.generateSession(socket.id, data.name);
-    console.log(`- generated token:${sessionToken}`);
+    let newSession = sessionManager.generateSession(socket.id, data.name);
+    console.log(`- generated token:${newSession.token}`);
 
     // Join session room
-    socket.join(sessionToken);
+    socket.join(newSession.token);
 
     // Send session token to host
-    io.to(socket.id).emit("session.new.response", { sessionToken: sessionToken });
+    io.to(socket.id).emit("session.new.response", { sessionToken: newSession.token });
 
-    io.to(sessionToken).emit("feed.add.status", { message: `Session created with token ${sessionToken}` });
+    io.to(newSession.token).emit("feed.add.status", { message: `Session created with token ${newSession.token}` });
   });
 
   socket.on("session.join", (data) => {
@@ -42,9 +44,9 @@ io.on('connection', function (socket) {
     console.log(`- socket id:${socket.id}, session token:${data.sessionToken}`);
 
     try {
-      var hostName = session.joinSession(data.sessionToken, socket.id, data.name);
-      socket.join(data.sessionToken);
-      io.to(socket.id).emit("session.join.response", { hostName: hostName });
+      var session = sessionManager.joinSession(data.sessionToken, socket.id, data.name);
+      socket.join(session.token);
+      io.to(socket.id).emit("session.join.response", { hostName: session.getHost().name });
       io.to(data.sessionToken).emit("feed.add.status", { message: `${data.name} joined the session` });
     } catch (e) {
       console.log(e);
@@ -53,21 +55,29 @@ io.on('connection', function (socket) {
 
   socket.on("connection.check", (data) => {
     console.log(`connection.check - initiated by ${socket.id}`);
-    socket.to(session.getSessionTokenBySocketId(socket.id)).emit("connection.check", { initiatedById: socket.id });
+    socket.to(sessionManager.findSessionByClientId(socket.id).token).emit("connection.check", { initiatedById: socket.id });
   })
 
   socket.on('disconnect', function () {
     console.log('disconnect');
     console.log(`- socket id:${socket.id}`);
 
-    let sessionToken = session.getSessionTokenBySocketId(socket.id);
-    session.
-      io.to(sessionToken).emit("feed.add.status", { message })
+    let foundSession = sessionManager.findSessionByClientId(socket.id);
+    if (foundSession === undefined) {
+      console.log(`- Could not find session for socket id ${socket.id}`);
+      return;
+    }
+
+    let disconnectedClientName = foundSession.getClientById(socket.id);
+    io.to(foundSession.token).emit("feed.add.status", { message: `${disconnectedClientName.name} disconnected` });
 
     // Remove socket from session, close room if socket was host
-    session.handleDisconnection(socket.id, (sessionToken) => {
-      socket.to(sessionToken).emit("session.close");
-    })
+    sessionManager.handleDisconnection(socket.id, (session) => {
+      // Force all connected clients to disconnect
+      socket.to(session.token).emit("session.close");
+    }, (session) => {
+      // No action required})
+    });
   });
 });
 
