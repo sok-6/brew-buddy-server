@@ -76,9 +76,25 @@ io.on('connection', function (socket) {
       // Force all connected clients to disconnect
       socket.to(session.token).emit("session.close");
     }, (session) => {
-      // No action required})
+      // No action required
     });
   });
+
+  socket.on("chat.send", (data) => {
+    // Get the session to send the chat message to
+    let session = sessionManager.findSessionByClientId(socket.id);
+    let client = session.getClientById(socket.id);
+
+    io.to(session.token).emit("feed.add.chat", {
+      senderName: client.name,
+      senderIsHost: client.isHost,
+      message: data.message
+    });
+  })
+
+  socket.on("game.start", (data) => {
+    
+  })
 });
 
 http.listen(3000, function () {

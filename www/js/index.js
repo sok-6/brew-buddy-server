@@ -85,6 +85,11 @@ let openConnection = () => {
         console.log("feed.add.status");
         addFeedStatus(data.message);
     })
+
+    socket.on("feed.add.chat", (data) => {
+        console.log("feed.add.chat");
+        addFeedChat(data.senderName, data.senderIsHost, data.message);
+    })
 }
 
 let initiateConnectionCheck = () => {
@@ -93,6 +98,13 @@ let initiateConnectionCheck = () => {
 
 let addFeedStatus = (message) => {
     let newElement = $("<div>").addClass("feed-element").append($("<i>").text(message));
+    $("#feed-body").append(newElement);
+}
+
+let addFeedChat = (senderName, senderIsHost, message) => {
+    let newElement = $("<div>").addClass("feed-element");
+    newElement.append($("<b>").text(senderName + (senderIsHost ? " (Host)" : "") + ": "));
+    newElement.append(document.createTextNode(message));
     $("#feed-body").append(newElement);
 }
 
@@ -107,6 +119,10 @@ let openJoinLinkInNewWindow = () => {
     window.open($("#join-link").val(), "");
 }
 
+let sendChatMessage = (message) => {
+    socket.emit("chat.send", {message: message});
+}
+
 $(document).ready(() => {
     // Set up display name modal behaviour
     $('#modal_name').modal({
@@ -115,6 +131,15 @@ $(document).ready(() => {
             openConnection();
         }
     });
+
+    // Set up chat submit behaviour
+    $("#feed-chat-input").keypress((e) => {
+        if(e.which == 10 || e.which == 13) {
+            console.log($("#feed-chat-input").val());
+            sendChatMessage($("#feed-chat-input").val());
+            $("#feed-chat-input").val("");
+        }
+    })
 
     // Check if display name has already been set
     let cookieName = getCookie("name");

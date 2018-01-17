@@ -26,17 +26,38 @@ html, body {
     height: 100%;
 }
 
-.feed-body {
-    height: 100%;
-    border-width: 0px;
-    border-left: 1px black;
-    border-style: solid;
-}
-
 .feed-component {
     padding: 3px;
 }
 
 .hidden {
     visibility: hidden !important;
+}
+
+#feed-panel {
+    height: 100%;
+    border-width: 0px;
+    border-left: 1px black;
+    border-style: solid;
+    display: flex;
+    flex-direction: column;
+}
+
+#feed-panel * {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#feed-title {
+    padding: 3px;
+    flex: 0 1 auto;
+}
+
+#feed-body {
+    flex: 1 1 auto;
+}
+
+#feed-chat {
+    flex: 0 1 auto;
+    border-top: 1px grey solid;
 }
