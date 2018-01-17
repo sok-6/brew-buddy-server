@@ -29,14 +29,30 @@
     <div class="flex-body">
       <!-- <div class="full-height container"> -->
       <div class="row flex-row">
-        <div class="full-height col m9 s12">
-          123
+        <div id="main-body" class="full-height col m9 s12">
+          <div class="row">
+            <div id="host-controls" class="col s12 hidden">
+              <div class="row">
+                <div class="col s8">
+                  <input id="join-link" type="text">
+                </div>
+                <div class="col s4 valign-wrapper">
+                  <a class="waves-effect waves-light btn inline tooltipped" style="padding:0 1rem;" data-position="right" data-delay="50" data-tooltip="Copy link to clipboard"
+                    onclick="copyJoinLinkToClipboard();">
+                    <i class="material-icons">content_copy</i>
+                  </a>
+                  <a class="waves-effect waves-light btn inline tooltipped" style="padding:0 1rem;" data-position="right" data-delay="50" data-tooltip="Launch in new tab"
+                    onclick="openJoinLinkInNewWindow()">
+                    <i class="material-icons">launch</i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="full-height col m3 s12">
           <div id="feed-body" class="feed-body">
-            <div class="feed-component">
-              456
-            </div>
+            <div class="feed-component"> </div>
           </div>
           <!-- <div style="position:absolute;bottom:0;display:flex;background-color:deepskyblue;">
             <div class="input-field inline" style=>

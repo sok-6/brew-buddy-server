@@ -36,3 +36,7 @@ html, body {
 .feed-component {
     padding: 3px;
 }
+
+.hidden {
+    visibility: hidden !important;
+}

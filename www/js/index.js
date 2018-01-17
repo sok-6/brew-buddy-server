@@ -52,10 +52,23 @@ let openConnection = () => {
 
     socket.on("session.new.response", (data) => {
         console.log("created session " + data.sessionToken);
+
+        // Set host controls to be visible
+        $("#host-controls").removeClass("hidden");
+
+        // Add join link
+        let joinUrl = window.location.href.replace(window.location.path, "") + data.sessionToken;
+        $("#join-link").val(joinUrl);
     })
 
     socket.on("session.join.response", (data) => {
-        console.log(`joined session, host:${data.hostName}`);
+        let message = `joined session, host:${data.hostName}`;
+        console.log(message);
+
+        // Remove host controls
+        $("#host-controls").remove();
+
+        addFeedStatus(message);
     })
 
     socket.on("session.close", () => {
@@ -70,16 +83,28 @@ let openConnection = () => {
 
     socket.on("feed.add.status", (data) => {
         console.log("feed.add.status");
-
-        let newElement = $("<div>").addClass("feed-element").append($("<i>").text(data.message));
-
-        $("#feed-body").append(newElement);
-
+        addFeedStatus(data.message);
     })
 }
 
 let initiateConnectionCheck = () => {
     socket.emit("connection.check");
+}
+
+let addFeedStatus = (message) => {
+    let newElement = $("<div>").addClass("feed-element").append($("<i>").text(message));
+    $("#feed-body").append(newElement);
+}
+
+let copyJoinLinkToClipboard = () => {
+    $("#join-link").prop("disabled", false);
+    document.querySelector('#join-link').select();
+    document.execCommand("copy");
+    $("#join-link").prop("disabled", true);
+}
+
+let openJoinLinkInNewWindow = () => {
+    window.open($("#join-link").val(), "");
 }
 
 $(document).ready(() => {
