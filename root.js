@@ -6,12 +6,15 @@ var io = require('socket.io')(http);
 const path = require("path")
 
 const sessionManager = require("./app/session");
+const pluginHelper = require("./app/pluginHelper");
 
 // TODO: Remove manual routing, need to figure out express.js
 app.get("/*", (req, res) => {
   if (req.path.startsWith("/static/")) {
     let x = req.path.substring(7);
     res.sendFile(path.join(__dirname, "www", x));
+  } else if (req.path === "/plugins.js") {
+    
   } else {
     res.sendFile(path.join(__dirname, "www/index.html"));
   }
