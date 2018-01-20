@@ -61,3 +61,10 @@ html, body {
     flex: 0 1 auto;
     border-top: 1px grey solid;
 }
+
+#game-div {
+    border-radius: 10px;
+    border: solid 1px grey;
+    width: 100%;
+    height: 500px;
+}

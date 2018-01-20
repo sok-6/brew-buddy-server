@@ -2,6 +2,9 @@
 var socket;
 var cookieName = "";
 
+var gameStart = () => {};
+var gameUpdate = () => {};
+
 let getCookie = (cname) => {
     // var name = cname + "=";
     // var decodedCookie = decodeURIComponent(document.cookie);
@@ -93,17 +96,30 @@ let openConnection = () => {
 
     socket.on("game.initialise", (data) => {
         console.log("game.initialise");
-        console.log(data);
+        console.log(`- type:${data.type}`);
+
+        let game = {};
+        switch (data.type) {
+            case "horses":
+                game = horsesGame(data);
+                break;
+        
+            default:
+                break;
+        }
+
+        gameStart = game.gameStart;
+        gameUpdate = game.gameUpdate;
     })
 
     socket.on("game.start", (data) => {
         console.log("game.start");
-        console.log(data);
+        gameStart(data);
     })
 
     socket.on("game.update", (data) => {
         console.log("game.update");
-        console.log(data);
+        gameUpdate(data);
     })
 }
 
@@ -170,4 +186,8 @@ $(document).ready(() => {
     } else {
         openConnection();
     }
+
+    let s = Snap("#game-div");
+    s.clear();
+    s.text(s.node.clientWidth / 2, 100, "Waiting for host to begin game...");
 });
