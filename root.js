@@ -6,7 +6,7 @@ var io = require('socket.io')(http);
 const path = require("path")
 
 const sessionManager = require("./app/session");
-const pluginHelper = require("./app/pluginHelper");
+const startHorses = require("./app/game/horses");
 
 // TODO: Remove manual routing, need to figure out express.js
 app.get("/*", (req, res) => {
@@ -14,7 +14,7 @@ app.get("/*", (req, res) => {
     let x = req.path.substring(7);
     res.sendFile(path.join(__dirname, "www", x));
   } else if (req.path === "/plugins.js") {
-    
+
   } else {
     res.sendFile(path.join(__dirname, "www/index.html"));
   }
@@ -96,7 +96,24 @@ io.on('connection', function (socket) {
   })
 
   socket.on("game.start", (data) => {
-    
+    console.log("game.start");
+
+    let session = sessionManager.findSessionByClientId(socket.id);
+    if (session.getHost().id !== socket.id) {
+      console.log(`- Start game initiated by ${socket.id} but not host of game`);
+    } else {
+      let participants = session.clients.map((c) => c.name);
+      let sendMessage = (message, data) => { io.to(session.token).emit(message, data) };
+
+      switch (data.gameType) {
+        case "horses":
+          startHorses(participants, sendMessage);
+          break;
+
+        default:
+          break;
+      }
+    }
   })
 });
 

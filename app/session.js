@@ -129,11 +129,12 @@ let handleDisconnection = (clientId, hostCallback, clientCallback) => {
         let client = session.getClientById(clientId);
         if (client.isHost) {
             hostCallback(session);
-            let sessionIndex = activeSessions.findIndex((s) => s.token === session.token);
-            activeSessions.splice(sessionIndex, 1);
         } else {
             clientCallback(session);
         }
+        
+        let sessionIndex = activeSessions.findIndex((s) => s.token === session.token);
+        activeSessions.splice(sessionIndex, 1);
     }
 }
 

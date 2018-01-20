@@ -1,6 +1,6 @@
 
 var socket;
-var cookieName = "123";
+var cookieName = "";
 
 let getCookie = (cname) => {
     // var name = cname + "=";
@@ -90,6 +90,21 @@ let openConnection = () => {
         console.log("feed.add.chat");
         addFeedChat(data.senderName, data.senderIsHost, data.message);
     })
+
+    socket.on("game.initialise", (data) => {
+        console.log("game.initialise");
+        console.log(data);
+    })
+
+    socket.on("game.start", (data) => {
+        console.log("game.start");
+        console.log(data);
+    })
+
+    socket.on("game.update", (data) => {
+        console.log("game.update");
+        console.log(data);
+    })
 }
 
 let initiateConnectionCheck = () => {
@@ -120,7 +135,7 @@ let openJoinLinkInNewWindow = () => {
 }
 
 let sendChatMessage = (message) => {
-    socket.emit("chat.send", {message: message});
+    socket.emit("chat.send", { message: message });
 }
 
 $(document).ready(() => {
@@ -134,12 +149,19 @@ $(document).ready(() => {
 
     // Set up chat submit behaviour
     $("#feed-chat-input").keypress((e) => {
-        if(e.which == 10 || e.which == 13) {
+        if (e.which == 10 || e.which == 13) {
             console.log($("#feed-chat-input").val());
             sendChatMessage($("#feed-chat-input").val());
             $("#feed-chat-input").val("");
         }
     })
+
+    // Set up game start button
+    $("#begin-game").click(() => {
+        socket.emit("game.start", { 
+            gameType: "horses" 
+        });
+    });
 
     // Check if display name has already been set
     let cookieName = getCookie("name");
