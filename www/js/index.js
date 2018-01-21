@@ -1,6 +1,6 @@
 
 var socket;
-var cookieName = "";
+var cookieName = "123";
 
 var gameStart = () => {};
 var gameUpdate = () => {};

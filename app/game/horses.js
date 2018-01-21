@@ -26,7 +26,7 @@ let processUpdate = (playerName, sendMessage) => {
         updateSteps: updateSteps
     });
 
-    if (values[playerName] !== MAX_STEPS) {
+    if (values[playerName] < MAX_STEPS) {
         setTimeout(() => {
             processUpdate(playerName, sendMessage);
         }, getRandomUpdateTimeout());
