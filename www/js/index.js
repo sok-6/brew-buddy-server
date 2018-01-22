@@ -28,6 +28,16 @@ let setCookie = (cname, cvalue) => {
     cookieName = cvalue;
 };
 
+let hashInner = (s) => {
+    let hash = 17;
+    for (let i = 0; i < s.length; i++) {
+        hash = (hash * 23) + s.charCodeAt(i);
+    }
+    return hash;
+}
+
+let generateHashFunction = (token) => (s) => hashInner(token + s);
+
 let setDisplayName = (displayName) => {
     setCookie("name", displayName);
 };
