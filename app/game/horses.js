@@ -1,11 +1,11 @@
 const rnd = require("../helpers").getRandomInt;
 
 const MAX_STEPS = 20;
-const MS_PER_STEP = 250;
+const MS_PER_STEP = 150;
 const MIN_STEPS_PER_UPDATE = 1;
 const MAX_STEPS_PER_UPDATE = 3;
-const MIN_MS_PER_UPDATE = 1000;
-const MAX_MS_PER_UPDATE = 3000;
+const MIN_MS_PER_UPDATE = 450;
+const MAX_MS_PER_UPDATE = 2000;
 
 let values = {};
 

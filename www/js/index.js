@@ -1,6 +1,7 @@
 
 var socket;
-var cookieName = "123";
+var cookieName = "";
+var sessionToken = "";
 
 var gameStart = () => {};
 var gameUpdate = () => {};
@@ -49,12 +50,14 @@ let openConnection = () => {
         if (sessionToken === "") {
             socket.emit("session.new", { name: getCookie("name") });
         } else {
+            sessionToken = sessionToken;
             socket.emit("session.join", { name: getCookie("name"), sessionToken: sessionToken });
         }
     });
 
     socket.on("session.new.response", (data) => {
         console.log("created session " + data.sessionToken);
+        sessionToken = data.sessionToken;
 
         // Set host controls to be visible
         $("#host-controls").removeClass("hidden");
