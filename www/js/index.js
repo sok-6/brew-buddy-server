@@ -1,6 +1,6 @@
 
 var socket;
-var cookieName = "";
+var cookieName = Math.floor(Math.random() * 1000).toString();
 var sessionToken = "";
 
 var gameStart = () => {};
@@ -114,7 +114,7 @@ let openConnection = () => {
         let game = {};
         switch (data.type) {
             case "horses":
-                game = horsesGame(data);
+                game = horsesGame(generateHashFunction(sessionToken), data);
                 break;
         
             default:

@@ -12,9 +12,7 @@ var horsesGame = (hashFunction, data) => {
         "#7F663C",
         "#3C7F66",
         "#3C557F",
-        "#7F3C55",
-        "#000000",
-        "#FFFFFF"
+        "#7F3C55"
     ];
 
     const STEP_SIZE = RACE_LENGTH / (data.maxSteps);
