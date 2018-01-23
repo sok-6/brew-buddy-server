@@ -8,7 +8,7 @@ const path = require("path")
 const sessionManager = require("./app/session");
 const startHorses = require("./app/game/horses");
 
-// TODO: Remove manual routing, need to figure out express.js
+//TODO: Remove manual routing, need to figure out express.js
 app.get("/*", (req, res) => {
   if (req.path.startsWith("/static/")) {
     let x = req.path.substring(7);
