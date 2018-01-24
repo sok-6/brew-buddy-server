@@ -7,6 +7,8 @@ const MAX_STEPS_PER_UPDATE = 3;
 const MIN_MS_PER_UPDATE = 450;
 const MAX_MS_PER_UPDATE = 2000;
 
+const logger = require("../logFactory")("horses");
+
 let values = {};
 
 let getRandomUpdateTimeout = () => {
@@ -21,15 +23,18 @@ let processUpdate = (playerName, sendMessage) => {
 
     values[playerName] += updateSteps;
 
+    logger.debug(`${playerName} updated ${updateSteps} to ${values[playerName]}`);
+
     sendMessage("game.update", {
         player: playerName,
         updateSteps: updateSteps
     });
 
     if (values[playerName] < MAX_STEPS) {
-        setTimeout(() => {
-            processUpdate(playerName, sendMessage);
-        }, getRandomUpdateTimeout());
+        let t = getRandomUpdateTimeout();
+        logger.debug(`${playerName} timeout ${t} ms`);
+        
+        setTimeout(processUpdate, t, playerName, sendMessage);
     }
 }
 
@@ -49,9 +54,10 @@ module.exports = (participants, sendMessage) => {
         participants.forEach(playerName => {
             values[playerName] = 0;
 
-            setTimeout(() => {
-                processUpdate(playerName, sendMessage);
-            }, getRandomUpdateTimeout());
+            let t = getRandomUpdateTimeout();
+            logger.debug(`Initial for ${playerName}, delay ${t}`);
+
+            setTimeout(processUpdate, t, playerName, sendMessage);
         });
     }, 1000);
     
