@@ -6,6 +6,8 @@ var horsesGame = (hashFunction, data) => {
     const NEUTRAL_Y_OFFSET = 50;
     const RACE_LENGTH = 600;
     const LANE_SEPARATION = 50;
+    const HORSE_WIDTH = 147;
+    const FINISH_LINE_X_ADJUSTMENT = -20;
 
     const availableColours = [
         "#663C7F",
@@ -21,6 +23,25 @@ var horsesGame = (hashFunction, data) => {
     // Clear canvas
     var s = Snap("#game-div");
     s.clear();
+
+    // Draw finishing post
+    let finishX = NEUTRAL_X_OFFSET + RACE_LENGTH + HORSE_WIDTH + FINISH_LINE_X_ADJUSTMENT;
+    s.rect(finishX, 100, 1,(LANE_SEPARATION * data.participants.length) + 10).attr({ // Finish line
+        "stroke":"#000000",
+        "stroke-width":1
+    });
+
+    s.rect(finishX - 4, 25, 9, 75).attr({ // Post upright
+        "fill":"#FFFFFF",
+        "stroke":"#000000",
+        "stroke-width":3
+    });
+
+    s.circle(finishX, 25, 15).attr({ // Post top
+        "fill":"#FFFFFF",
+        "stroke":"#FF0000",
+        "stroke-width":10
+    })
 
     // Set up colour set
     let colours = availableColours.slice();
