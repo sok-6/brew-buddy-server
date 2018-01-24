@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/sok-6/brew-buddy-server#readme",
   "dependencies": {
+    "dateformat": "^3.0.2",
     "express": "^4.16.2",
     "socket.io": "^2.0.4"
   }

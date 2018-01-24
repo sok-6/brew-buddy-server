@@ -5,6 +5,10 @@ var io = require('socket.io')(http);
 
 const path = require("path")
 
+const logger = require("./app/logFactory")("root");
+
+logger.log("test", "testMessage");
+
 const sessionManager = require("./app/session");
 const startHorses = require("./app/game/horses");
 
