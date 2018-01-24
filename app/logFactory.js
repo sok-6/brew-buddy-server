@@ -4,6 +4,7 @@ const dateformat = require("dateformat");
 
 const LOG_DIRECTORY = path.join(path.dirname(require.main.filename), "logs");
 const FILE_NOT_EXISTS_CODE = -4058;
+const DIR_ALREADY_EXISTS_CODE = -4075;
 
 var logQueue = [];
 
@@ -44,11 +45,19 @@ let createLogger = (sourceName) => {
     try {
         fs.mkdirSync(LOG_DIRECTORY);
     } catch (ex) {
-        console.log(ex);
+        // Ignore error if file already exists
+        if (ex.errno !== DIR_ALREADY_EXISTS_CODE) {
+            throw ex;
+        }
     }
 
     return {
-        log: (level, message) => logMessage(level, sourceName, message)
+        log: (level, message) => logMessage(level, sourceName, message),
+        trace: (message) => logMessage("trace", sourceName, message),
+        debug: (message) => logMessage("debug", sourceName, message),
+        info: (message) => logMessage("info", sourceName, message),
+        warn: (message) => logMessage("warn", sourceName, message),
+        error: (message) => logMessage("error", sourceName, message)
     }
 }
 

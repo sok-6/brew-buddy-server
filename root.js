@@ -7,8 +7,6 @@ const path = require("path")
 
 const logger = require("./app/logFactory")("root");
 
-logger.log("test", "testMessage");
-
 const sessionManager = require("./app/session");
 const startHorses = require("./app/game/horses");
 
@@ -26,16 +24,16 @@ app.get("/*", (req, res) => {
 
 app.use("/static", express.static("www"));
 
-io.on('connection', function (socket) {
-  console.log('connection');
+io.on("connection", function (socket) {
+  logger.info('connection');
 
   socket.on("session.new", (data) => {
-    console.log("session.new");
-    console.log(`- socket id:${socket.id}`);
+    logger.info("session.new");
+    logger.info(`socket id:${socket.id}`);
 
     // Create new session, get token
     let newSession = sessionManager.generateSession(socket.id, data.name);
-    console.log(`- generated token:${newSession.token}`);
+    logger.info(`generated token:${newSession.token}`);
 
     // Join session room
     socket.join(newSession.token);
@@ -47,8 +45,8 @@ io.on('connection', function (socket) {
   });
 
   socket.on("session.join", (data) => {
-    console.log("session.join");
-    console.log(`- socket id:${socket.id}, session token:${data.sessionToken}`);
+    logger.info("session.join");
+    logger.info(`socket id:${socket.id}, session token:${data.sessionToken}`);
 
     try {
       var session = sessionManager.joinSession(data.sessionToken, socket.id, data.name);
@@ -56,22 +54,22 @@ io.on('connection', function (socket) {
       io.to(socket.id).emit("session.join.response", { hostName: session.getHost().name });
       io.to(data.sessionToken).emit("feed.add.status", { message: `${data.name} joined the session` });
     } catch (e) {
-      console.log(e);
+      logger.info(e);
     }
   })
 
   socket.on("connection.check", (data) => {
-    console.log(`connection.check - initiated by ${socket.id}`);
+    logger.info(`connection.check - initiated by ${socket.id}`);
     socket.to(sessionManager.findSessionByClientId(socket.id).token).emit("connection.check", { initiatedById: socket.id });
   })
 
   socket.on('disconnect', function () {
-    console.log('disconnect');
-    console.log(`- socket id:${socket.id}`);
+    logger.info('disconnect');
+    logger.info(`socket id:${socket.id}`);
 
     let foundSession = sessionManager.findSessionByClientId(socket.id);
     if (foundSession === undefined) {
-      console.log(`- Could not find session for socket id ${socket.id}`);
+      logger.info(`Could not find session for socket id ${socket.id}`);
       return;
     }
 
@@ -100,11 +98,11 @@ io.on('connection', function (socket) {
   })
 
   socket.on("game.start", (data) => {
-    console.log("game.start");
+    logger.info("game.start");
 
     let session = sessionManager.findSessionByClientId(socket.id);
     if (session.getHost().id !== socket.id) {
-      console.log(`- Start game initiated by ${socket.id} but not host of game`);
+      logger.info(`Start game initiated by ${socket.id} but not host of game`);
     } else {
       let participants = session.clients.map((c) => c.name);
       let sendMessage = (message, data) => { io.to(session.token).emit(message, data) };
@@ -122,5 +120,5 @@ io.on('connection', function (socket) {
 });
 
 http.listen(3000, function () {
-  console.log('listening on *:3000');
+  logger.info('listening on *:3000');
 });
