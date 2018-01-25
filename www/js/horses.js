@@ -59,7 +59,7 @@ var horsesGame = (hashFunction, data) => {
             })
             .transform(initialTransform);
 
-        participants[playerName] = { horse: x };
+        participants[playerName] = { horse: x, steps: 0 };
         //console.log(participants[playerName].horse.transform());
 
         // Remove previous colour
@@ -85,7 +85,11 @@ var horsesGame = (hashFunction, data) => {
         let moveDist = STEP_SIZE * data.updateSteps;
         console.log(moveDist);
 
-        participants[data.player].horse.animate({ "transform": `...t${moveDist},0` }, MS_PER_STEP, mina.easeinout);
+        participants[data.player].steps += data.updateSteps;
+        participants[data.player].horse.animate({ "transform": `...t${moveDist},0` }, MS_PER_STEP, mina.easeinout, () => {
+            console.log(`${data.player} reached ${participants[data.player].steps}`);
+            // element.stop();
+        });
         console.log(participants[data.player].horse.transform())
     }
 
