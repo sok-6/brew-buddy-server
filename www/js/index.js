@@ -55,13 +55,13 @@ let openConnection = () => {
         console.log(socket.id);
 
         // Create new session or join existing one
-        let sessionToken = window.location.pathname.slice(1)
+        let pathSessionToken = window.location.pathname.slice(1)
 
-        if (sessionToken === "") {
+        if (pathSessionToken === "") {
             socket.emit("session.new", { name: getCookie("name") });
         } else {
-            sessionToken = sessionToken;
-            socket.emit("session.join", { name: getCookie("name"), sessionToken: sessionToken });
+            sessionToken = pathSessionToken;
+            socket.emit("session.join", { name: getCookie("name"), sessionToken: pathSessionToken });
         }
     });
 
@@ -110,6 +110,8 @@ let openConnection = () => {
     socket.on("game.initialise", (data) => {
         console.log("game.initialise");
         console.log(`- type:${data.type}`);
+
+        console.log(sessionToken);
 
         let game = {};
         switch (data.type) {
