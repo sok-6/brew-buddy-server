@@ -85,10 +85,26 @@ var horsesGame = (hashFunction, data) => {
         let moveDist = STEP_SIZE * data.updateSteps;
         console.log(moveDist);
 
-        participants[data.player].steps += data.updateSteps;
         participants[data.player].horse.animate({ "transform": `...t${moveDist},0` }, MS_PER_STEP, mina.easeinout, () => {
+            participants[data.player].steps += data.updateSteps;
             console.log(`${data.player} reached ${participants[data.player].steps}`);
-            // element.stop();
+            
+            // If this horse has stopped, check all the others to see if only 1 is left
+            if (participants[data.player].steps === 20) {
+                // Get list of horses that haven't finished
+                let unfinished = [];
+                for (const player in participants) {
+                    if (participants.hasOwnProperty(player)) {
+                        if (participants[player].steps !== 20) {
+                            unfinished.push(player);
+                        }
+                    }
+                }
+                if (unfinished.length === 1) {
+                    participants[unfinished[0]].horse.stop();
+                    alert(unfinished[0]);
+                }
+            }
         });
         console.log(participants[data.player].horse.transform())
     }
