@@ -9,50 +9,12 @@ const MAX_MS_PER_UPDATE = 2000;
 
 const logger = require("../logFactory")("horses");
 
-let values = {};
-
 let getRandomUpdateTimeout = () => {
     return rnd(MIN_MS_PER_UPDATE, MAX_MS_PER_UPDATE);
 };
 
-let processUpdate = (playerName, sendMessage) => {
-    // Check if this is last horse
-    let unfinishedPlayerCount = 0;
-    for (const player in values) {
-        if (values.hasOwnProperty(player)) {
-            if (values[player] < 20) {
-                unfinishedPlayerCount++;
-            }            
-        }
-    }
-    
-    if (unfinishedPlayerCount < 2) {
-        return;
-    }
-
-    let currentSteps = values[playerName];
-    let maxStepsPossible = Math.min(MAX_STEPS - currentSteps, MAX_STEPS_PER_UPDATE);
-
-    let updateSteps = rnd(MIN_STEPS_PER_UPDATE, maxStepsPossible + 1);
-
-    values[playerName] += updateSteps;
-
-    logger.debug(`${playerName} updated ${updateSteps} to ${values[playerName]}`);
-
-    sendMessage("game.update", {
-        player: playerName,
-        updateSteps: updateSteps
-    });
-
-    if (values[playerName] < MAX_STEPS) {
-        let t = getRandomUpdateTimeout();
-        logger.debug(`${playerName} timeout ${t} ms`);
-        
-        setTimeout(processUpdate, t, playerName, sendMessage);
-    }
-}
-
-module.exports = (participants, sendMessage) => {
+let initialiseGame = (session, sendMessage) => {
+    let participants = session.clients.map((c) => c.name);
     sendMessage("game.initialise", { 
         type:"horses",
         participants: participants, 
@@ -66,13 +28,54 @@ module.exports = (participants, sendMessage) => {
         });
 
         participants.forEach(playerName => {
-            values[playerName] = 0;
+            session.gameData[playerName] = 0;
 
             let t = getRandomUpdateTimeout();
             logger.debug(`Initial for ${playerName}, delay ${t}`);
 
-            setTimeout(processUpdate, t, playerName, sendMessage);
+            setTimeout(processUpdate, t, session, playerName, sendMessage);
         });
     }, 1000);
     
 }
+
+let processUpdate = (session, playerName, sendMessage) => {
+    logger.debug(`${playerName}: gameData:${JSON.stringify(session.gameData)}`);
+    // Check if this is last horse
+    let unfinishedPlayerCount = 0;
+    for (const player in session.gameData) {
+        if (session.gameData.hasOwnProperty(player)) {
+            if (session.gameData[player] < 20) {
+                unfinishedPlayerCount++;
+            }            
+        }
+    }
+    
+    logger.debug(`${playerName}: unfinishedPlayerCount:${unfinishedPlayerCount}`);
+    if (unfinishedPlayerCount < 2) {
+        return;
+    }
+
+    let currentSteps = session.gameData[playerName];
+    let maxStepsPossible = Math.min(MAX_STEPS - currentSteps, MAX_STEPS_PER_UPDATE);
+
+    let updateSteps = rnd(MIN_STEPS_PER_UPDATE, maxStepsPossible + 1);
+
+    session.gameData[playerName] += updateSteps;
+
+    logger.debug(`${playerName} updated ${updateSteps} to ${session.gameData[playerName]}`);
+
+    sendMessage("game.update", {
+        player: playerName,
+        updateSteps: updateSteps
+    });
+
+    if (session.gameData[playerName] < MAX_STEPS) {
+        let t = getRandomUpdateTimeout();
+        logger.debug(`${playerName} timeout ${t} ms`);
+        
+        setTimeout(processUpdate, t, session, playerName, sendMessage);
+    }
+}
+
+module.exports = initialiseGame;

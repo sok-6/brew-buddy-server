@@ -18,6 +18,7 @@ class Session {
         this.token = token;
         this.clients = [];
         this.clients.push(new Client(hostId, hostName, true));
+        this.gameData = {};
     }
 
     /**

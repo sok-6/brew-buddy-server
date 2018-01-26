@@ -104,12 +104,11 @@ io.on("connection", function (socket) {
     if (session.getHost().id !== socket.id) {
       logger.info(`Start game initiated by ${socket.id} but not host of game`);
     } else {
-      let participants = session.clients.map((c) => c.name);
       let sendMessage = (message, data) => { io.to(session.token).emit(message, data) };
 
       switch (data.gameType) {
         case "horses":
-          startHorses(participants, sendMessage);
+          startHorses(session, sendMessage);
           break;
 
         default:
