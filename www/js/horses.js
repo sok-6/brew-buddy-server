@@ -8,6 +8,8 @@ var horsesGame = (hashFunction, data) => {
     const LANE_SEPARATION = 50;
     const HORSE_WIDTH = 147;
     const FINISH_LINE_X_ADJUSTMENT = -20;
+    const TEXT_X_OFFSET = 10;
+    const TEXT_Y_OFFSET = 100;
 
     const availableColours = [
         "#663C7F",
@@ -50,6 +52,16 @@ var horsesGame = (hashFunction, data) => {
         const playerName = data.participants[i];
 
         let colour = colours[hashFunction(playerName) % colours.length];
+
+        // Draw player's name
+        s.text(TEXT_X_OFFSET, TEXT_Y_OFFSET + (i * LANE_SEPARATION), playerName).attr({
+            "font-size":30, 
+            "font-family":"Roboto, sans-serif", 
+            "font-weight":"bold",
+            "fill":colour,
+            "stroke":"#000000",
+            "stroke-width":0
+        })
 
         let initialTransform = `t${NEUTRAL_X_OFFSET},${NEUTRAL_Y_OFFSET + (i * LANE_SEPARATION)}`;
         let x = s.path(HORSE_SVG_PATH)
