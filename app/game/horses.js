@@ -16,6 +16,20 @@ let getRandomUpdateTimeout = () => {
 };
 
 let processUpdate = (playerName, sendMessage) => {
+    // Check if this is last horse
+    let unfinishedPlayerCount = 0;
+    for (const player in values) {
+        if (values.hasOwnProperty(player)) {
+            if (values[player] < 20) {
+                unfinishedPlayerCount++;
+            }            
+        }
+    }
+    
+    if (unfinishedPlayerCount < 2) {
+        return;
+    }
+
     let currentSteps = values[playerName];
     let maxStepsPossible = Math.min(MAX_STEPS - currentSteps, MAX_STEPS_PER_UPDATE);
 
