@@ -1,5 +1,6 @@
-const rnd = require("../helpers").getRandomInt;
+const helpers = require("../helpers");
 
+const MS_BEFORE_START = 3000;
 const MAX_STEPS = 20;
 const MS_PER_STEP = 150;
 const MIN_STEPS_PER_UPDATE = 1;
@@ -10,11 +11,14 @@ const MAX_MS_PER_UPDATE = 2000;
 const logger = require("../logFactory")("horses");
 
 let getRandomUpdateTimeout = () => {
-    return rnd(MIN_MS_PER_UPDATE, MAX_MS_PER_UPDATE);
+    return helpers.getRandomInt(MIN_MS_PER_UPDATE, MAX_MS_PER_UPDATE);
 };
 
 let initialiseGame = (session, sendMessage) => {
-    let participants = session.clients.map((c) => c.name);
+    let participants = helpers.shuffle(session.clients.map((c) => c.name));
+
+    
+
     sendMessage("game.initialise", { 
         type:"horses",
         participants: participants, 
@@ -35,8 +39,7 @@ let initialiseGame = (session, sendMessage) => {
 
             setTimeout(processUpdate, t, session, playerName, sendMessage);
         });
-    }, 1000);
-    
+    }, MS_BEFORE_START);
 }
 
 let processUpdate = (session, playerName, sendMessage) => {
@@ -59,7 +62,7 @@ let processUpdate = (session, playerName, sendMessage) => {
     let currentSteps = session.gameData[playerName];
     let maxStepsPossible = Math.min(MAX_STEPS - currentSteps, MAX_STEPS_PER_UPDATE);
 
-    let updateSteps = rnd(MIN_STEPS_PER_UPDATE, maxStepsPossible + 1);
+    let updateSteps = helpers.getRandomInt(MIN_STEPS_PER_UPDATE, maxStepsPossible + 1);
 
     session.gameData[playerName] += updateSteps;
 
