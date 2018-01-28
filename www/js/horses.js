@@ -22,6 +22,7 @@ var horsesGame = (hashFunction, data) => {
     const MS_PER_STEP = data.msPerStep;
 
     let participants = {};
+    let bannerText = null;
 
     // Clear canvas
     var s = Snap("#game-div");
@@ -44,7 +45,7 @@ var horsesGame = (hashFunction, data) => {
         "fill":"#FFFFFF",
         "stroke":"#FF0000",
         "stroke-width":10
-    })
+    });
 
     // Set up colour set
     let colours = availableColours.slice();
@@ -71,7 +72,6 @@ var horsesGame = (hashFunction, data) => {
             .transform(initialTransform);
 
         participants[playerName] = { horse: x, steps: 0 };
-        //console.log(participants[playerName].horse.transform());
 
         // Remove previous colour
         let colourIndex = colours.indexOf(colour);
@@ -86,8 +86,23 @@ var horsesGame = (hashFunction, data) => {
         }
     }
 
+    let updateBannerText = (text) => {
+        // Clear previous banner text
+        if (bannerText != null) {
+            bannerText.remove();
+        }
+
+        bannerText = s.text(NEUTRAL_X_OFFSET + (RACE_LENGTH / 2),FINISH_TEXT_Y,text).attr({
+            "font-size":30, 
+            "font-family":"Roboto, sans-serif", 
+            "font-weight":"bold"
+        });
+    }
+
     let gameStart = (data) => {
         console.log(data);
+
+        updateBannerText("And they're off!")
     }
 
     let gameUpdate = (data) => {
@@ -113,19 +128,15 @@ var horsesGame = (hashFunction, data) => {
                 }
                 if (unfinished.length === 1) {
                     participants[unfinished[0]].horse.stop();
-                    
-                    let finishText = s.text(NEUTRAL_X_OFFSET + (RACE_LENGTH / 2),FINISH_TEXT_Y,`${unfinished[0]} has lost`).attr({
-                        "font-size":30, 
-                        "font-family":"Roboto, sans-serif", 
-                        "font-weight":"bold"
-                    })
-
-                    
+                    updateBannerText(`${unfinished[0]} has lost`);
                 }
             }
         });
-        console.log(participants[data.player].horse.transform())
+        //console.log(participants[data.player].horse.transform())
     }
+
+    // Set initial text
+    updateBannerText("They're under starter's orders...");
 
     return {
         gameStart: gameStart,
