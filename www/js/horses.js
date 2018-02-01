@@ -108,11 +108,11 @@ var horsesGame = (hashFunction, data) => {
     let gameUpdate = (data) => {
         console.log(data);
 
-        let moveDist = STEP_SIZE * data.updateSteps;
+        let moveDist = STEP_SIZE * (data.totalSteps - participants[data.player].steps);
         console.log(moveDist);
 
         participants[data.player].horse.animate({ "transform": `...t${moveDist},0` }, MS_PER_STEP, mina.easeinout, () => {
-            participants[data.player].steps += data.updateSteps;
+            participants[data.player].steps = data.totalSteps;
             console.log(`${data.player} reached ${participants[data.player].steps}`);
             
             // If this horse has stopped, check all the others to see if only 1 is left

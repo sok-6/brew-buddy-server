@@ -70,7 +70,7 @@ let processUpdate = (session, playerName, sendMessage) => {
 
     sendMessage("game.update", {
         player: playerName,
-        updateSteps: updateSteps
+        totalSteps: session.gameData[playerName]
     });
 
     if (session.gameData[playerName] < MAX_STEPS) {
