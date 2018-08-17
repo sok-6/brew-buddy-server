@@ -90,6 +90,8 @@ io.on("connection", function (socket) {
     let session = sessionManager.findSessionByClientId(socket.id);
     let client = session.getClientById(socket.id);
 
+    logger.debug(`${client.name} sent chat message - ${data.message}`);
+
     io.to(session.token).emit("feed.add.chat", {
       senderName: client.name,
       senderIsHost: client.isHost,

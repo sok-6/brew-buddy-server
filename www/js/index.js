@@ -1,6 +1,6 @@
 
 var socket;
-var cookieName = Math.floor(Math.random() * 1000).toString();
+var cookieName = "";//Math.floor(Math.random() * 1000).toString();
 var sessionToken = "";
 
 var gameStart = () => {};
