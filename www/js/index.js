@@ -1,10 +1,6 @@
 
 var socket;
-<<<<<<< HEAD
 var cookieName = "";//Math.floor(Math.random() * 1000).toString();
-=======
-var cookieName = "";// Math.floor(Math.random() * 1000).toString();
->>>>>>> 82f824317dab3f82840a77a52282ef669a45ddce
 var sessionToken = "";
 
 var gameStart = () => {};
